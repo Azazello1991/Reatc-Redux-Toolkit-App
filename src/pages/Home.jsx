@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 import qs from "qs";
-import { useNavigate } from "react-router-dom"; // парсинг строки url (qs)
+import { Link, useNavigate } from "react-router-dom"; // парсинг строки url (qs)
 
 // Components
 import { AppContext } from "../App";
@@ -13,7 +13,12 @@ import Pagination from "../components/pagination/Pagination";
 
 // redux
 import { useSelector, useDispatch } from "react-redux";
-import { selectCategoryId, selectPageCount, selectSortBy, setFilters } from "../redux/slices/filtersSlice";
+import {
+  selectCategoryId,
+  selectPageCount,
+  selectSortBy,
+  setFilters,
+} from "../redux/slices/filtersSlice";
 import { fetchPizzasRes } from "../redux/slices/pizzasSlice"; // передаем response
 import PageError from "./Error/PageError";
 
@@ -34,7 +39,8 @@ const Home = () => {
   // ==================== useEffect для отслеживания строки URL:
   React.useEffect(() => {
     // розбираем строку
-    if (window.location.search) { // если параметры есть, то превращаем в обьект
+    if (window.location.search) {
+      // если параметры есть, то превращаем в обьект
       const params = qs.parse(window.location.search.substring(1)); // вырезаем "?" и конвертируем в обьект {categoryId: '0', sortBy: 'rating', currentPage: '0'}
       const sortBy = list.find((obj) => obj.sortProperty === params.sortBy); // ищим совпадение в list и спарсеного qs обьекта
 
@@ -133,7 +139,12 @@ const Home = () => {
 
   // ================== Мапинг блоков пицц:
   const arrMap =
-    pizzas && pizzas.map((item, i) => <PizzaBlock key={item.id} {...item} />);
+    pizzas &&
+    pizzas.map((item, i) => (
+      <Link to={`pizza/${item.id}`} key={item.id}>
+        <PizzaBlock {...item} />
+      </Link>
+    ));
   // ================== Мапинг скилетонов:
   const skeletons = [...new Array(6)].map((_, i) => <PizzaSkileton key={i} />);
 
@@ -149,7 +160,7 @@ const Home = () => {
       <h2 className="content__title">Все пиццы</h2>
 
       {isLoading === "error" ? (
-        <PageError/>
+        <PageError />
       ) : (
         <ul className="content__items">
           {isLoading === "loadihg" ? skeletons : arrMap}
